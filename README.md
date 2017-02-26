@@ -52,7 +52,7 @@ In general, the index created through geoadd may be sufficient for an entire app
 
 Instead, this example creates a minimal spatial index. As the value in the index is the base32 encoding Geohash, the index points directly at the 100,000 database entires populated using the Set command.
 
-* With reference to the index and the dataset together, this example performs an efficient geospatial lookup.
+* With reference to the index and the dataset together, this example performs an efficient geospatial lookup.  Here, the georadius command was used to query the index.  The value coming back from the index is the key for retrieving the exact object out of 100,000 from the cache.  Though georadius is used to query the index, other geo-commands are available.
 ```
 List<GeoRadiusResponse> nearHashes = conn.georadius(indexName, queryLon, queryLat, queryRadius, GeoUnit.KM, GeoRadiusParam.geoRadiusParam()
         .withCoord()
