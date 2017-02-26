@@ -16,8 +16,8 @@ public class Application {
 
     static int hashPrecision = 10;
     static String indexName = "my-index";
-    static int queryRadius = 10000;
-    static int queryNeighbours = 100;
+    static int queryRadius = 1000;
+    static int queryNeighbours = 10;
 
     public static void main(String[] args) {
 
@@ -40,6 +40,14 @@ public class Application {
         for (GeoRadiusResponse hash: nearHashes) {
             System.out.printf("%5.2f km: %s\n", hash.getDistance() , conn.get(hash.getMemberByString()) );
         }
+
+
+        // This is the way to do it using a serverside Lua script
+        String luaScript = "local val = redis.call('georadius',KEYS[1],KEYS[2],KEYS[3],KEYS[4],KEYS[5],KEYS[6],KEYS[7]) return redis.call('mget', unpack(val))";
+        String[] params = new String[]{indexName, Double.toString(queryLon), Double.toString(queryLat), Double.toString(queryRadius), "km",  "COUNT",  Integer.toString(queryNeighbours)};
+
+        String res = conn.eval(luaScript,params.length,params).toString();
+        System.out.println(res);
     }
 
     private static void repopulateDatabase(Jedis connection, double numberEntries) {
